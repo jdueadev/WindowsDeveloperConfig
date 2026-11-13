@@ -30,9 +30,13 @@ if (-not $longPaths -or $longPaths.LongPathsEnabled -ne 1) {
 }
 
 # wsl.exe writes UTF-16LE; strip NULs before matching the distro name.
-$distros = ((& wsl.exe --list --quiet) -join "`n") -replace "`0", ''
-if ($LASTEXITCODE -ne 0 -or $distros -notmatch '(?m)^\s*Ubuntu\s*$') {
-    throw 'WSL does not list the Ubuntu distro.'
+$distros = @((& wsl.exe --list --quiet) | ForEach-Object { ($_ -replace "`0", '').Trim() } | Where-Object { $_ })
+if ($LASTEXITCODE -ne 0) {
+    throw "wsl --list --quiet exited with code $LASTEXITCODE"
+}
+# Same rule as the WSL phase: any Ubuntu registration, including versioned ones such as Ubuntu-24.04.
+if (@($distros | Where-Object { $_ -like 'Ubuntu*' }).Count -eq 0) {
+    throw 'WSL does not list an Ubuntu distro.'
 }
 
 Write-Output 'OK'
