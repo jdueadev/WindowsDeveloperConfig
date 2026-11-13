@@ -99,6 +99,13 @@ $phases = @(
         Title     = 'GitHub Copilot'
         Uninstall = $true
     }
+    # After the phases that write user config, so personal links win; opt-in, a no-op without dotfiles.
+    @{
+        File      = 'dotfiles.ps1'
+        Function  = 'Invoke-DotfilesPhase'
+        Title     = 'Dotfiles'
+        Uninstall = $true
+    }
     @{
         File      = 'wsl.ps1'
         Function  = 'Invoke-WslPhase'
