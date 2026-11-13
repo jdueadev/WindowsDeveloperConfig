@@ -81,6 +81,7 @@ Command Palette extension.
 | WinAppCLI         | ✅ automated   | Developer Mode + `Microsoft.DotNet.SDK.10` + `Microsoft.WinAppCli` |
 | WinUI 3           | 🙋 manual     | PowerShell-native one-liner: Developer Mode, PowerShell 7, `Microsoft.DotNet.SDK.10`, `Microsoft.WinAppCli`, Visual Studio Community 2026 with the WinUI workloads, and the WinUI `dotnet new` templates ([`workloads/winui.ps1`](../windows-dev-config/workloads/winui.ps1)) |
 | Windows Dev Config | 🙋 manual     | PowerShell setup for developer tools, Windows settings, fonts, Terminal, and WSL + Ubuntu (see [`windows-dev-config/README.md`](../windows-dev-config/README.md), contributor internals in [`windows-dev-config.md`](./windows-dev-config.md)) |
+| Testbox           | 🙋 manual     | PowerShell-native one-liner: headless cut of Windows Dev Config for test and throwaway machines — Developer Mode, long paths, PowerShell 7, Git, GitHub CLI, uv, and WSL + Ubuntu ([`workloads/testbox.ps1`](../windows-dev-config/workloads/testbox.ps1)) |
 | NVIDIA CUDA       | 🙋 manual     | `Nvidia.CUDA` x64 or checksum/signature-pinned 13.4 ARM64 preview + MSVC + GPU kernel |
 | AMD ROCm / HIP    | 🙋 manual     | ROCm Core SDK 10.0 on supported Windows x64 AMD GPUs + compiled HIP kernel |
 | Intel AI          | 🙋 manual     | OpenVINO device inference; optional oneAPI/SYCL toolkit and GPU kernel |
@@ -120,6 +121,7 @@ Workloads/
   rust/            # setup.ps1 (one-line setup via the engine)
   winforms/        # configuration.winget (core) + install.ps1 (thin shim)
   winui/           # setup.ps1 (one-line setup via the engine)
+  testbox/         # setup.ps1 (one-line setup via the engine; headless Windows Dev Config)
   cuda/            # x64/ARM64 CUDA + MSVC + compiled GPU-kernel readiness
   rocm/            # Windows x64 AMD ROCm Core SDK + compiled HIP kernel
   intel-ai/        # Windows x64 OpenVINO and optional oneAPI/SYCL
@@ -144,6 +146,7 @@ tests/
   winforms/          # hello.csproj + Program.cs + expected.txt
   winui/             # hello.csproj + Program.cs + expected.txt
   calm-os/           # probe.ps1 + expected.txt (manual-only flow)
+  testbox/           # probe.ps1 + expected.txt (manual-only flow)
   comfort-shell/     # hello.sh + expected.txt (manual-only flow) + unit.ps1 (one-line launcher and hash checks)
 manifest.yml         # declarative list of flows consumed by CI **and** by the extension
 future/

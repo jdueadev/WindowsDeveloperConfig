@@ -482,6 +482,28 @@ flows:
       expected: src/tests/calm-os/expected.txt
       version: "git --version"
 
+  - id: testbox
+    name: Testbox
+    description: Lean, headless Windows Dev Config for test and throwaway machines — PowerShell 7, Git, GitHub CLI, uv, and WSL + Ubuntu
+    category: user-experience
+    tags: [testbox, headless, ci, vm, wsl, ubuntu, git]
+    icon: 🧪
+    onboardingUrl: https://dev.windows.com
+    # PowerShell-native flow: Workloads/testbox/setup.ps1 runs the Windows Dev
+    # Config engine (windows-dev-config/workloads/testbox.ps1). There is no
+    # configuration.winget, so the `configuration` key is omitted (same shape
+    # as calm-os). manual_test because WSL + Ubuntu forces a reboot and the
+    # engine entry point needs a signed release cycle and elevation, which the
+    # automated matrix can't provide.
+    manual_test: true
+    os: [windows]
+    windows:
+      install: Workloads/testbox/setup.ps1
+      build: ""
+      run: pwsh -NoProfile -File src/tests/testbox/probe.ps1
+      expected: src/tests/testbox/expected.txt
+      version: "git --version; gh --version; uv --version"
+
 # Curated bundles of flows. Surfaced by the Command Palette extension; not
 # consumed by CI today.
 combos: []

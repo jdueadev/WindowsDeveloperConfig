@@ -15,6 +15,7 @@ Run from any PowerShell window. Each one elevates, verifies signatures, and inst
 | WinAppCLI | Developer Mode, PowerShell 7, .NET SDK 10, and the Windows App Development CLI | `irm https://aka.ms/devconfig/winappcli/setup.ps1 \| iex` |
 | .NET | Developer Mode, PowerShell 7, and .NET SDK 10 | `irm https://aka.ms/devconfig/dotnet/setup.ps1 \| iex` |
 | Go | PowerShell 7 and Go | `irm https://aka.ms/devconfig/go/setup.ps1 \| iex` |
+| Testbox | Developer Mode, long paths, PowerShell 7, Git, GitHub CLI, uv, and WSL + Ubuntu. A headless cut of the full setup for test and throwaway machines: no GUI apps, fonts, or Windows tweaks. One reboot if WSL isn't installed yet | One-liner coming with the next signed release. Until then, from a clone: `.\src\windows-dev-config\dev-config.ps1 -AllowUnsigned -Workload testbox` |
 | Rust | PowerShell 7, rustup, the stable toolchain, and Visual Studio Community 2026 with the C++ workload, MSVC build tools, and Windows 11 SDK (for the MSVC linker) | `irm https://aka.ms/devconfig/rust/setup.ps1 \| iex` |
 | PHP | PowerShell 7, the Visual C++ Redistributable, and PHP | `irm https://aka.ms/devconfig/php/setup.ps1 \| iex` |
 
