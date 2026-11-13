@@ -36,7 +36,7 @@ Windows PowerShell 5.1 and PowerShell 7.
 
 ## The phases
 
-`Full` runs all 11 phases in order; `Partial` skips Edge and uses [fewer settings](../windows-dev-config/README.md#setup-actions). WSL + Ubuntu runs last so its restart happens after everything else is done.
+`Full` runs all 12 phases in order; `Partial` skips Edge and uses [fewer settings](../windows-dev-config/README.md#setup-actions). WSL + Ubuntu runs last so its restart happens after everything else is done.
 
 | # | Phase | # | Phase |
 | --- | --- | --- | --- |
@@ -44,8 +44,8 @@ Windows PowerShell 5.1 and PowerShell 7.
 | 2 | Packages | 8 | Windows Terminal |
 | 3 | System settings | 9 | PowerShell profile |
 | 4 | File Explorer tweaks | 10 | GitHub Copilot (best-effort) |
-| 5 | Taskbar, search & start tweaks | 11 | WSL + Ubuntu |
-| 6 | Microsoft Edge tweaks |  |  |
+| 5 | Taskbar, search & start tweaks | 11 | [Dotfiles](../windows-dev-config/README.md#dotfiles) (opt-in) |
+| 6 | Microsoft Edge tweaks | 12 | WSL + Ubuntu |
 
 Adding a phase means adding one file and one entry in a workload's phase list. Adding a step to an existing phase means one `New-DevConfigStep` call. Keep every step's check cheap and side-effect free — it runs on every invocation, including the fast path where nothing needs doing.
 

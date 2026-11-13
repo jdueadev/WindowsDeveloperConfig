@@ -40,6 +40,7 @@ irm https://aka.ms/devconfig/standard/setup.ps1 | iex
 - **Terminal:** PowerShell 7 as the default profile, Oh My Posh in your prompt, Cascadia Mono NF as the default font, and a GitHub Copilot profile in the dropdown.
 - **Windows settings:** Dark theme, long paths, File Explorer defaults, Start/Search settings, and Do Not Disturb
 - **WSL:** WSL platform + Ubuntu, including the restart and the automatic resume afterwards.
+- **Dotfiles (opt-in):** links your own dotfiles repository into your profile. Nothing happens unless you set it up. See [Dotfiles](#dotfiles).
 </details>
 
 ### Full experience
@@ -262,6 +263,39 @@ These are **best-effort**: they need the network and a PATH that has just been u
 - The **WinUI templates** for `dotnet new` (`Microsoft.WindowsAppSDK.WinUI.CSharp.Templates`).
 - The **`microsoft/win-dev-skills`** marketplace and its **WinUI plugin**, registered with the GitHub Copilot CLI.
 
+### Dotfiles
+
+Opt-in, and skipped unless you set it up. It brings your own settings to every machine the same way: one repository, linked into place in seconds.
+
+1. Put a `devconfig.links.psd1` at the root of your dotfiles repository. Each entry maps a path in your profile to a file or folder in the repository:
+
+   ```powershell
+   @{
+       Links = @{
+           '~\.gitconfig'                      = 'git\.gitconfig'
+           '~\.config\starship.toml'           = 'starship.toml'
+           '%APPDATA%\Code\User\settings.json' = 'vscode\settings.json'
+       }
+   }
+   ```
+
+2. Either clone the repository to `%USERPROFILE%\.dotfiles` yourself, or set its URL as a user environment variable and setup clones it for you:
+
+   ```powershell
+   [Environment]::SetEnvironmentVariable('DEVCONFIG_DOTFILES_REPO', 'https://github.com/you/dotfiles.git', 'User')
+   ```
+
+3. Run setup. Each link is a step that's checked, applied, and verified like any other.
+
+What it guarantees:
+
+- **No code from your repository runs.** The links file is read as data (`Import-PowerShellDataFile`), and setup runs nothing else from the repository. If you want an install script, run it yourself.
+- **Links stay in your profile.** Every link path must resolve inside `%USERPROFILE%`, and every source must stay inside the repository. One bad entry flags the phase and changes nothing, and the rest of setup carries on.
+- **Nothing is lost.** Anything already at a link path is moved to `<path>.devconfig-backup` first. Cleanup removes only links that point into your repository and puts the backups back. It never deletes the repository.
+- **Clones run as you, never as admin, and never wait on a hidden sign-in prompt.** For a private repository that needs credentials, clone it to `%USERPROFILE%\.dotfiles` yourself before running setup.
+
+This phase runs after Terminal, the PowerShell profile, and Copilot, so your links replace what those phases wrote. On a later run, those phases edit whatever their file now points to. For example, if you link `$PROFILE`, the Oh My Posh block is written into your repository's copy.
+
 ### WSL
 
 - The WSL platform components, via `wsl --install --no-distribution`. If that isn't available, the `VirtualMachinePlatform` and `Microsoft-Windows-Subsystem-Linux` Windows features are enabled directly with `dism.exe` instead.
@@ -386,7 +420,7 @@ Production requests process-scoped `RemoteSigned` for every launch, including Po
 <details>
 <summary><strong>What it does not do</strong></summary>
 
-It doesn't collect or send telemetry, doesn't sign you in to anything, doesn't change credentials or Windows Defender settings, and doesn't touch files in your user profile beyond the PowerShell profile and Windows Terminal settings described above.
+It doesn't collect or send telemetry, doesn't sign you in to anything, doesn't change credentials or Windows Defender settings, and doesn't touch files in your user profile beyond the PowerShell profile, Windows Terminal settings, and any [dotfile links](#dotfiles) you declare.
 
 </details>
 
@@ -511,6 +545,7 @@ Use the [uninstall command](#quick-start) from Quick start (from source, add `-A
 - **Settings:** disable Sudo, Developer Mode, and Remote Desktop; reset Explorer, Start, search, notification, Bluetooth tray, taskbar End Task, Widgets, Edge policies, long-path, and WSL first-run settings; select the unrestricted QuietHours profile and switch app/system themes to light.
 - **Terminal:** cancel any pending next-sign-in font update; remove `defaultProfile`, `profiles.defaults`, PowerShell/Copilot/Ubuntu profile entries (including dynamically generated PowerShell entries), and the Copilot fragment.
 - **Integrations:** remove the managed Oh My Posh profile block, WinUI template package, and win-dev-skills marketplace. Custom profile code and unrelated plugins are preserved.
+- **Dotfiles:** remove links that point into `%USERPROFILE%\.dotfiles` and restore the `.devconfig-backup` files they replaced. The repository itself is kept.
 - **Tools:** uv, NVM, the WinUI Copilot plugin, Node.js, Copilot, Python 3.14, Git, GitHub CLI, Oh My Posh, Azure CLI, Coreutils, .NET SDK 10, Intelligent Terminal, PowerToys, Visual Studio Code, Windows App CLI, and PowerShell 7.
 - **Not removed:** fonts, the Visual C++ runtime, WinGet, Windows optional features, and setup files/logs under `%ProgramData%\CalmOS`.
 
