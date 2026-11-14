@@ -118,6 +118,10 @@ if ($Action -eq 'Partial') {
     ($phases | Where-Object { $_.File -eq 'registry-taskbar-search.ps1' }).Title = 'Taskbar & Start tweaks'
 } elseif ($Action -eq 'Uninstall') {
     $phases = @($phases | Where-Object { $_['Uninstall'] })
+    # Undo links first: dotfiles restores backups taken after the profile and Copilot phases wrote to
+    # those files, so the cleanup phases that follow can remove the managed content they bring back.
+    $phases = @($phases | Where-Object { $_.File -eq 'dotfiles.ps1' }) +
+        @($phases | Where-Object { $_.File -ne 'dotfiles.ps1' })
     # Reset Terminal after removing the tools and WSL fragments that can recreate profiles.
     $phases = @($phases | Where-Object { $_.File -notin @('packages.ps1', 'terminal.ps1') }) +
         @($phases | Where-Object { $_.File -eq 'packages.ps1' }) +
