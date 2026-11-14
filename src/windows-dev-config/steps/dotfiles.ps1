@@ -151,7 +151,23 @@ function Get-DevConfigDotfilesLinks {
         }
         [pscustomobject]@{ Name = $key; Path = $path; Source = $source }
     }
-    return @($links)
+    # The checks above are lexical, so a link under another link's path would be made through that
+    # link, inside the repository. Compare whole path segments so '~\ab' is not inside '~\a'.
+    $links = @($links)
+    for ($i = 0; $i -lt $links.Count; $i++) {
+        for ($j = 0; $j -lt $links.Count; $j++) {
+            if ($i -eq $j) { continue }
+            $outer = $links[$i]
+            $inner = $links[$j]
+            if ($i -lt $j -and [string]::Equals($outer.Path, $inner.Path, [StringComparison]::OrdinalIgnoreCase)) {
+                throw "Links '$($outer.Name)' and '$($inner.Name)' resolve to the same path, $($outer.Path). Keep one of them."
+            }
+            if (Test-DevConfigDotfilesPathInside -Path $inner.Path -Root $outer.Path) {
+                throw "Link '$($inner.Name)' lies inside link '$($outer.Name)'. Nested links are not supported; link the parent folder only."
+            }
+        }
+    }
+    return $links
 }
 
 function Get-DevConfigDotfilesLinkTarget {

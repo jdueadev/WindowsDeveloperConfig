@@ -37,8 +37,11 @@ foreach ($phase in $uninstall.Phases) {
         (ConvertTo-Json $original -Depth 10 -Compress)) "Cleanup must preserve the $($phase.File) phase definition."
 }
 
-$remaining = @($eligible | Where-Object { $_.File -notin @('packages.ps1', 'terminal.ps1') } | ForEach-Object { $_.File })
-Assert-PhaseOrder (($cleanupFiles[0..($cleanupFiles.Count - 3)] -join ',') -ceq ($remaining -join ',')) 'Other cleanup phases must retain their relative order.'
+# Dotfiles restores backups taken after the profile and Copilot phases wrote to them, so it undoes first.
+Assert-PhaseOrder ($cleanupFiles[0] -eq 'dotfiles.ps1') 'Dotfiles cleanup must run first, before the phases that remove managed content.'
+
+$remaining = @($eligible | Where-Object { $_.File -notin @('dotfiles.ps1', 'packages.ps1', 'terminal.ps1') } | ForEach-Object { $_.File })
+Assert-PhaseOrder (($cleanupFiles[1..($cleanupFiles.Count - 3)] -join ',') -ceq ($remaining -join ',')) 'Other cleanup phases must retain their relative order.'
 Assert-PhaseOrder ($full.Phases[-1].File -eq 'wsl.ps1') 'Full setup must keep WSL last for reboot handling.'
 Assert-PhaseOrder ($partial.Phases[-1].File -eq 'wsl.ps1') 'Partial setup must keep WSL last for reboot handling.'
 Assert-PhaseOrder ((@($full.Phases.File).IndexOf('terminal.ps1')) -lt

@@ -70,6 +70,13 @@ try {
     Assert-DotfilesThrows { Get-DevConfigDotfilesLinks -Directory $repo -HomeDirectory $fakeHome } '*does not exist*' 'Missing sources must be rejected.'
     Write-LinksFile $repo "@{ Links = @{ '~\.dotfiles\loop' = 'git\.gitconfig' } }"
     Assert-DotfilesThrows { Get-DevConfigDotfilesLinks -Directory $repo -HomeDirectory $fakeHome } '*inside the dotfiles repository itself*' 'Links must not point back into the repository.'
+    # A link inside another link's path would be created through the outer link, inside the repository.
+    Write-LinksFile $repo "@{ Links = @{ '~\a' = 'nvim'; '~\a\x' = 'git\.gitconfig' } }"
+    Assert-DotfilesThrows { Get-DevConfigDotfilesLinks -Directory $repo -HomeDirectory $fakeHome } '*lies inside link*' 'Links nested under another link must be rejected.'
+    Write-LinksFile $repo "@{ Links = @{ '~\.gitconfig' = 'git\.gitconfig'; '~/.gitconfig' = 'nvim\init.lua' } }"
+    Assert-DotfilesThrows { Get-DevConfigDotfilesLinks -Directory $repo -HomeDirectory $fakeHome } '*same path*' 'Two keys resolving to one link path must be rejected.'
+    Write-LinksFile $repo "@{ Links = @{ '~\a' = 'nvim'; '~\ab' = 'git\.gitconfig' } }"
+    Assert-Dotfiles (@(Get-DevConfigDotfilesLinks -Directory $repo -HomeDirectory $fakeHome).Count -eq 2) 'A sibling sharing a name prefix is not nested.'
     Write-LinksFile $repo "@{ Links = @{}; Run = 'calc.exe' }"
     Assert-DotfilesThrows { Get-DevConfigDotfilesLinks -Directory $repo -HomeDirectory $fakeHome } '*unknown keys*' 'Unknown keys must be rejected.'
     Write-LinksFile $repo "@{ Links = @{ '~\.gitconfig' = (Get-Process) } }"

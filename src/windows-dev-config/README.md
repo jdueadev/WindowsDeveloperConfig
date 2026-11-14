@@ -290,7 +290,7 @@ Opt-in, and skipped unless you set it up. It brings your own settings to every m
 What it guarantees:
 
 - **No code from your repository runs.** The links file is read as data (`Import-PowerShellDataFile`), and setup runs nothing else from the repository. If you want an install script, run it yourself.
-- **Links stay in your profile.** Every link path must resolve inside `%USERPROFILE%`, and every source must stay inside the repository. One bad entry flags the phase and changes nothing, and the rest of setup carries on.
+- **Links stay in your profile.** Every link path must resolve inside `%USERPROFILE%`, and every source must stay inside the repository. A link path may not sit inside another link's path; link the parent folder instead. One bad entry flags the phase and changes nothing, and the rest of setup carries on.
 - **Nothing is lost.** Anything already at a link path is moved to `<path>.devconfig-backup` first. Cleanup removes only links that point into your repository and puts the backups back. It never deletes the repository.
 - **Clones run as you, never as admin, and never wait on a hidden sign-in prompt.** For a private repository that needs credentials, clone it to `%USERPROFILE%\.dotfiles` yourself before running setup.
 
